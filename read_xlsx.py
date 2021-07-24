@@ -116,6 +116,7 @@ def feature_group_by_(SORTED_BY, TYPE_NAMES):
         columns_data.append([])
 
     for i in range(len(TYPE_NAMES)):
+        _total=len(group[i][feature_type[1]])
         for j in range(1, len(feature_type)):
             mean_feature = np.round(np.mean(group[i][feature_type[j]]), 2)
             std_feature = np.round(np.std(group[i][feature_type[j]]), 3)
@@ -128,7 +129,7 @@ def feature_group_by_(SORTED_BY, TYPE_NAMES):
             k = k + 1
             columns_data[k].append(feature_type_detail[j])
             k = k + 1
-            columns_data[k].append(0)
+            columns_data[k].append(_total)
             k = k + 1
             columns_data[k].append(mean_feature)
             k = k + 1
