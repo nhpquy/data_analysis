@@ -1,0 +1,16 @@
+Gender,Learning hours,Mean
+Male,Total,3.78
+Male,Total Online,2.77
+Male,Total Offline,2.95
+Male,Hours with instruction,1.61
+Male,Hours without instruction,4.11
+Female,Total,3.8
+Female,Total Online,2.6
+Female,Total Offline,2.9
+Female,Hours with instruction,1.07
+Female,Hours without instruction,4.43
+Not public,Total,3.8
+Not public,Total Online,4.27
+Not public,Total Offline,3.33
+Not public,Hours with instruction,2.6
+Not public,Hours without instruction,5
