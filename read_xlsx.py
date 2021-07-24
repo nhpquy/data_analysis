@@ -2,7 +2,8 @@ from pathlib import Path
 
 import openpyxl
 import pandas as pd
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 xlsx_file = Path('data', 'covid19.xlsx')
 wb_obj = openpyxl.load_workbook(xlsx_file)
 import numpy as np
@@ -157,3 +158,108 @@ def feature_group_by_(SORTED_BY, TYPE_NAMES):
     df = pd.DataFrame(data, columns=column_name)
 
     return df
+
+
+def display_distribution(SORTED_BY,TYPE_NAMES):
+    
+    Total="Total"
+    Total_Online="Total_Online"
+    Total_Online="Total_Online"
+    Total_offline="Total_offline"
+    LHInstruction="LHInstruction"
+    LH_w_Instruction="LH_w_Instruction"
+    
+    detail_Total="Total"
+    detail_Total_Online="Total Online"
+    detail_Total_offline="Total Offline"
+    detail_LHInstruction="Hours with instruction"
+    detail_LH_w_Instruction="Hours without instruction"
+    
+    
+    feature_type=[Total,Total_Online,Total_offline,LHInstruction,LH_w_Instruction]
+    feature_type_detail=[detail_Total,detail_Total_Online,detail_Total_offline,detail_LHInstruction,detail_LH_w_Instruction]
+    group=[]
+
+    
+    for i in range(len(TYPE_NAMES)):
+        group.append({feature_type[0]:[],feature_type[1]:[],feature_type[2]:[],feature_type[3]:[],feature_type[4]:[]})
+
+    for i in range(0,len(data_read_dict[SORTED_BY])):
+        _index=data_read_dict[SORTED_BY][i]
+        group[_index-1][feature_type[1]].append(data_read_dict[Total_Online][i])
+        group[_index-1][feature_type[2]].append(data_read_dict[Total_offline][i])
+        group[_index-1][feature_type[3]].append(data_read_dict[LHInstruction][i])
+        group[_index-1][feature_type[4]].append(data_read_dict[LH_w_Instruction][i])
+
+
+    d_Total="Total"
+    d_Mean="Mean"
+    d_Std_Deviation="Std.Deviation"
+    d_Lower_Bound="Lower Bound"
+    d_Upper_Bound="Upper Bound"
+    d_Min="Min"
+    d_Max="Max"
+
+    column_name=[SORTED_BY,"Learning hours",d_Total,d_Mean,d_Std_Deviation,d_Lower_Bound,d_Upper_Bound,d_Min,d_Max]    
+    columns_data=[]
+    columns_data.append([])
+    for _ in range(len(column_name)):
+        columns_data.append([])
+    
+    for i in range(len(TYPE_NAMES)):
+        _total=len(group[i][feature_type[1]])
+        for j in range(1,len(feature_type)):
+                mean_feature=np.round(np.mean(group[i][feature_type[j]]),2)
+                std_feature=np.round(np.std(group[i][feature_type[j]]),3)
+                max_feature=np.round(np.max(group[i][feature_type[j]]),2)
+                min_feature=np.round(np.min(group[i][feature_type[j]]),2)
+
+                (upper,lower)=mean_confidence_interval(group[i][feature_type[j]])
+                k=0
+                columns_data[k].append(TYPE_NAMES[i])
+                k=k+1
+                columns_data[k].append(feature_type_detail[j])
+                k=k+1
+                columns_data[k].append(_total)
+                k=k+1
+                columns_data[k].append(mean_feature)
+                k=k+1
+                columns_data[k].append(std_feature)
+                k=k+1
+                columns_data[k].append(upper)
+                k=k+1
+                columns_data[k].append(lower)
+                k=k+1
+                columns_data[k].append(min_feature)
+                k=k+1
+                columns_data[k].append(max_feature)
+           
+    
+    data = {column_name[0]: columns_data[0],
+            column_name[1]: columns_data[1],
+            column_name[2]: columns_data[2],
+            column_name[3]: columns_data[3],
+            column_name[4]: columns_data[4],
+            column_name[5]: columns_data[5],
+            column_name[6]: columns_data[6],
+            column_name[7]: columns_data[7],
+            column_name[8]: columns_data[8],
+            
+            }
+
+    df = pd.DataFrame(data, columns=column_name)
+    print(df.head())
+    plt.figure(figsize=(16,10), dpi= 80)
+
+    color=["g","deeppink","dodgerblue","orange"]
+    for i in range(2,len(column_name)):
+        _data1={"val":columns_data[i],"name":column_name[i]}
+        sns.kdeplot( data=_data1["val"], shade=True, color=color[i%len(color)], label=_data1["name"], alpha=.7)
+    plt.title(SORTED_BY +" - Learning hours", fontsize=22)
+    plt.legend()
+    plt.show()
+    
+    return df
+
+
+
