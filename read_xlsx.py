@@ -8,7 +8,6 @@ wb_obj = openpyxl.load_workbook(xlsx_file)
 import numpy as np
 
 sheet = wb_obj["data_student_learning_habit_cov"]
-
 import scipy as sp
 import scipy.stats
 
@@ -34,6 +33,7 @@ data_read_dict = {
     "Total_offline": [],
     "off_instr": [],
     "off_noninstr": [],
+
     "nec_prog": [],
     "nec_habit": [],
     "nec_teacher": [],
@@ -64,6 +64,7 @@ def mean_confidence_interval(data, confidence=0.95):
 
 
 for column in sheet.iter_cols(2, sheet.max_column):
+
     column_data = []
     for j in range(1, sheet.max_row):
         column_data.append(column[j].value)
@@ -109,7 +110,6 @@ def feature_group_by_(SORTED_BY, TYPE_NAMES):
 
     column_name = [SORTED_BY, "Learning hours", d_Total, d_Mean, d_Std_Deviation, d_Lower_Bound, d_Upper_Bound, d_Min,
                    d_Max]
-
     columns_data = []
     columns_data.append([])
     for _ in range(len(column_name)):
@@ -123,9 +123,7 @@ def feature_group_by_(SORTED_BY, TYPE_NAMES):
             min_feature = np.round(np.min(group[i][feature_type[j]]), 2)
 
             (upper, lower) = mean_confidence_interval(group[i][feature_type[j]])
-
             k = 0
-
             columns_data[k].append(TYPE_NAMES[i])
             k = k + 1
             columns_data[k].append(feature_type_detail[j])
@@ -153,53 +151,8 @@ def feature_group_by_(SORTED_BY, TYPE_NAMES):
             column_name[6]: columns_data[6],
             column_name[7]: columns_data[7],
             column_name[8]: columns_data[8],
-
             }
 
     df = pd.DataFrame(data, columns=column_name)
 
     return df
-
-
-def feature_group_by_2_type_and_gender(SORTED_BY, TYPE_NAME):
-    NUM_OF_TYPE = len(TYPE_NAME)
-
-    Total_offline = "Total_offline"
-    Total_Online = "Total_Online"
-    LHInstruction = "LHInstruction"
-    LH_w_Instruction = "LH_w_Instruction"
-
-    feature = []
-    for i in range(NUM_OF_TYPE):
-        feature.append({"total": [], "online": [], "offline": [], "with_instruction": [], "without_instruction": []})
-    # feature.append({"total":[],"online":[],"offline":[],"with_instruction":[],"without_instruction":[]})
-    # feature.append({"total":[],"online":[],"offline":[],"with_instruction":[],"without_instruction":[]})
-    # feature_returned_male={"male":feature_extracted,"female":feature_extracted,"not_public":feature_extracted}
-
-    for i in range(0, len(data_read_dict[SORTED_BY])):
-        gender_var = data_read_dict[SORTED_BY][i]
-        feature[gender_var - 1]["online"].append(data_read_dict[Total_Online][i])
-        feature[gender_var - 1]["offline"].append(data_read_dict[Total_offline][i])
-        feature[gender_var - 1]["with_instruction"].append(data_read_dict[LHInstruction][i])
-        feature[gender_var - 1]["without_instruction"].append(data_read_dict[LH_w_Instruction][i])
-
-    for j in range(NUM_OF_TYPE):
-        print("type------->", TYPE_NAME[j])
-        # print("__total__")
-        # print("online",np.round(np.mean(feature[0]["online"]),2))
-        # print("offline",np.round(np.mean(feature[0]["offline"]),2))
-        # print("with_instruction",np.mean(feature[0]["with_instruction"]))
-        # print("without_instruction",np.round(np.mean(feature[0]["without_instruction"]),2))
-
-        print("__mean__")
-        print("online", np.round(np.mean(feature[j]["online"]), 2))
-        print("offline", np.round(np.mean(feature[j]["offline"]), 2))
-        print("with_instruction", np.round(np.mean(feature[j]["with_instruction"]), 2))
-        print("without_instruction", np.round(np.mean(feature[j]["without_instruction"]), 2))
-
-        # print("__std__")
-        # print("online",np.round(np.std(feature[0]["online"]),2))
-        # print("offline",np.round(np.std(feature[0]["offline"]),2))
-        # print("with_instruction",np.std(feature[0]["with_instruction"]))
-        # print("without_instruction",np.round(np.std(feature[0]["without_instruction"]),2))
-
